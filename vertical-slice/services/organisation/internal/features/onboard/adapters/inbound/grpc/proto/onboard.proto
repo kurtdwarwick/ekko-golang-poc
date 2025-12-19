@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "organisation/internal/features/onboard/adapters/inbound/grpc/proto";
+
+service OnboardOrganisationService {   
+    rpc OnboardOrganisation(OnboardOrganisationRequest) returns (OnboardOrganisationResponse);
+}
+
+message OnboardOrganisationRequest {
+    optional string legalName = 1;
+    optional string tradingName = 2;
+    optional string website = 3;
+}
+
+message OnboardOrganisationResponse {
+    optional string id = 1;
+}
