@@ -1,11 +1,8 @@
 package main
 
 import (
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/ekko-earth/impact/internal/organisation"
+	"github.com/ekko-earth/shared/application"
 
 	mongoAdapters "github.com/ekko-earth/shared/mongodb/adapters"
 	rabbitmqAdapters "github.com/ekko-earth/shared/rabbitmq/adapters"
@@ -43,10 +40,7 @@ func main() {
 
 	organisationDomain.Start()
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	<-stop
+	application.Run()
 
 	defer organisationDomain.Stop()
 }

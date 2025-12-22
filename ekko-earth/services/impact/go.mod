@@ -4,10 +4,11 @@ go 1.25.4
 
 require (
 	github.com/ekko-earth/shared/adapters v0.0.0
-	github.com/ekko-earth/shared/gorm v0.0.0-00010101000000-000000000000
+	github.com/ekko-earth/shared/gorm v0.0.0
 	github.com/ekko-earth/shared/messaging v0.0.0
 	github.com/ekko-earth/shared/mongodb v0.0.0
 	github.com/ekko-earth/shared/rabbitmq v0.0.0
+	github.com/ekko-earth/shared/application v0.0.0
 	github.com/google/uuid v1.6.0
 	gorm.io/gorm v1.31.1
 	go.mongodb.org/mongo-driver/v2 v2.4.1
@@ -49,3 +50,5 @@ replace github.com/ekko-earth/shared/rabbitmq => ../../shared/rabbitmq
 replace github.com/ekko-earth/shared/messaging => ../../shared/messaging
 
 replace github.com/ekko-earth/shared/mongodb => ../../shared/mongodb
+
+replace github.com/ekko-earth/shared/application => ../../shared/application

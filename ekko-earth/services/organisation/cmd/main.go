@@ -4,10 +4,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard"
+	"github.com/ekko-earth/shared/application"
 
 	adapters "github.com/ekko-earth/shared/adapters"
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
@@ -69,10 +68,7 @@ func main() {
 
 	onboardFeature.Start()
 
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	<-stop
+	application.Run()
 
 	defer onboardFeature.Stop()
 }

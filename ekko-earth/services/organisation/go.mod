@@ -3,6 +3,7 @@ module github.com/ekko-earth/organisation
 go 1.25.4
 
 require (
+	github.com/ekko-earth/shared/application v0.0.0
 	github.com/ekko-earth/shared/adapters v0.0.0
 	github.com/ekko-earth/shared/gorm v0.0.0
 	github.com/ekko-earth/shared/grpc v0.0.0
@@ -51,3 +52,5 @@ replace github.com/ekko-earth/shared/gorm => ../../shared/gorm
 replace github.com/ekko-earth/shared/rabbitmq => ../../shared/rabbitmq
 
 replace github.com/ekko-earth/shared/messaging => ../../shared/messaging
+
+replace github.com/ekko-earth/shared/application => ../../shared/application
