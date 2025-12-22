@@ -41,5 +41,5 @@ func (server *HttpServer) Start() {
 func (server *HttpServer) Stop() {
 	slog.Info("Stopping HTTP consumer")
 
-	server.Server.Shutdown(context.Background())
+	server.Server.Shutdown(context.TODO())
 }

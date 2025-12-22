@@ -4,10 +4,10 @@ import (
 	adapters "github.com/ekko-earth/shared/adapters"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 
-	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
+	mongoAdapters "github.com/ekko-earth/shared/mongodb/adapters"
 	rabbitmqAdapters "github.com/ekko-earth/shared/rabbitmq/adapters"
 
-	impactGormAccess "github.com/ekko-earth/impact/internal/organisation/adapters/gorm"
+	impactMongoAccess "github.com/ekko-earth/impact/internal/organisation/adapters/mongodb"
 	impactRabbitmqAdapters "github.com/ekko-earth/impact/internal/organisation/adapters/rabbitmq"
 	impactEventHandlers "github.com/ekko-earth/impact/internal/organisation/core/events/handlers"
 	impactRepositories "github.com/ekko-earth/impact/internal/organisation/core/repositories"
@@ -19,9 +19,10 @@ func NewOrganisationDomain(
 	database adapters.Database,
 	inboundMessageBus messagingAdapters.MessageBus,
 ) *OrganisationDomain {
-	gormDatabase := database.(*gormAdapters.GormDatabase)
-
-	organisationDAO := impactGormAccess.NewGormOrganizationDAO(*gormDatabase)
+	//gormDatabase := database.(*gormAdapters.GormDatabase)
+	mongoDatabase := database.(*mongoAdapters.MongoDatabase)
+	//organisationDAO := impactGormAccess.NewGormOrganizationDAO(*gormDatabase)
+	organisationDAO := impactMongoAccess.NewMongoDBOrganisationDAO(*mongoDatabase)
 
 	repository := impactRepositories.NewOrganisationRepository(
 		organisationDAO,

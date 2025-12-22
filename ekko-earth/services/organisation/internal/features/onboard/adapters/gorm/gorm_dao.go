@@ -22,7 +22,7 @@ func NewGormOrganizationDAO(database gormAdapters.GormDatabase) *GormOrganisatio
 }
 
 func (dao *GormOrganisationDAO) Create(organisation *entities.Organisation) error {
-	context := context.Background()
+	context := context.TODO()
 
 	err := dao.db.Transaction(func(tx *gorm.DB) error {
 		err := gorm.G[models.OrganisationModel](dao.db).Create(context, &models.OrganisationModel{

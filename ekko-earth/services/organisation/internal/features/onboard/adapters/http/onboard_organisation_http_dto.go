@@ -1,7 +1,7 @@
 package http
 
 type OnboardOrganisationHttpDto struct {
-	LegalName   string `json:"legal_name"`
-	TradingName string `json:"trading_name"`
+	LegalName   string `json:"legalName"`
+	TradingName string `json:"tradingName"`
 	Website     string `json:"website"`
 }

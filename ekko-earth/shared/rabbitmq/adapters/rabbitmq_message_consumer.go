@@ -21,6 +21,15 @@ func NewRabbitMQMessageConsumer[TIncomingMessage any, TMessage any](
 	messageHandler messaging.MessageHandler[TMessage],
 	configuration RabbitMQMessageConsumerConfiguration,
 ) *RabbitMQMessageConsumer[TIncomingMessage, TMessage] {
+	messageBus.Channel.QueueDeclare(
+		configuration.Queue,
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+
 	deliveries, err := messageBus.Channel.Consume(
 		configuration.Queue,
 		"",

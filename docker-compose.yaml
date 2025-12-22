@@ -37,7 +37,33 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - poc-rabbitmq-data:/var/lib/rabbitmq
-      
+
+  poc-mongodb:
+
+    container_name: poc-mongodb
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - poc-mongodb-data:/data/db
+  
+  poc-mongo-express:
+
+    container_name: poc-mongo-express
+    image: mongo-express
+    ports:
+      - "8082:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: poc-mongodb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+    depends_on:
+      - poc-mongodb
+
 volumes:
   poc-postgres-data:
   poc-rabbitmq-data:
+  poc-mongodb-data:

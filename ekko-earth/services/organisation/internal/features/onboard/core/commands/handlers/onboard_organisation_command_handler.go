@@ -35,7 +35,7 @@ func NewOnboardOrganisationCommandHandler(
 func (handler *OnboardOrganisationCommandHandler) Handle(
 	command commands.OnboardOrganisationCommand,
 ) (any, error) {
-	context := context.Background()
+	context := context.TODO()
 
 	organisationId, err := handler.repository.OnboardOrganisation(
 		entities.Organisation{

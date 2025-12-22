@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"fmt"
+	"log/slog"
 
 	"github.com/ekko-earth/shared/adapters"
 	"gorm.io/driver/postgres"
@@ -24,7 +25,7 @@ func NewGormDatabase(configuration adapters.DatabaseConfiguration) *GormDatabase
 		}
 	}
 
-	database, err := gorm.Open(postgres.Open(fmt.Sprintf(
+	host := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s  sslmode=disable search_path=%s",
 		configuration.Host,
 		configuration.Port,
@@ -32,7 +33,11 @@ func NewGormDatabase(configuration adapters.DatabaseConfiguration) *GormDatabase
 		configuration.Password,
 		configuration.Database,
 		configuration.Schema,
-	)), config)
+	)
+
+	slog.Info("Connecting to PostgreSQL", "host", host)
+
+	database, err := gorm.Open(postgres.Open(host), config)
 
 	if err != nil {
 		panic(err)
