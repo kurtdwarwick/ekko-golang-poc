@@ -33,7 +33,7 @@ func NewMongoDBOrganisationDAO(database mongoAdapters.MongoDatabase) *MongoDBOrg
 	}
 }
 
-func (dao *MongoDBOrganisationDAO) Save(organisation *entities.Organisation) error {
+func (dao *MongoDBOrganisationDAO) Save(organisation *entities.Organisation, context context.Context) error {
 	options := options.UpdateOne().SetUpsert(true)
 
 	model := OrganisationModel{
@@ -43,7 +43,7 @@ func (dao *MongoDBOrganisationDAO) Save(organisation *entities.Organisation) err
 	}
 
 	_, err := dao.collection.UpdateOne(
-		context.TODO(),
+		context,
 		bson.M{"_id": organisation.Id},
 		bson.M{"$set": model},
 		options,

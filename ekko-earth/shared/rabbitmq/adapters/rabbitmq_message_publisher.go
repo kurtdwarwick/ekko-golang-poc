@@ -38,7 +38,7 @@ func NewRabbitMQMessagePublisher(
 	}
 }
 
-func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageType, context *context.Context) error {
+func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageType, context context.Context) error {
 	body, err := json.Marshal(message)
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageT
 	)
 
 	err = publisher.MessageBus.Channel.PublishWithContext(
-		*context,
+		context,
 		exchange,
 		message.GetMessageType(),
 		false,

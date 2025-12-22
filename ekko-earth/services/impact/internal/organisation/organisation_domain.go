@@ -1,6 +1,8 @@
 package organisation
 
 import (
+	"context"
+
 	adapters "github.com/ekko-earth/shared/adapters"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 
@@ -49,8 +51,10 @@ func NewOrganisationDomain(
 	return &OrganisationDomain{}
 }
 
-func (domain *OrganisationDomain) Start() {
+func (domain *OrganisationDomain) Start(context context.Context) error {
+	return nil
 }
 
-func (domain *OrganisationDomain) Stop() {
+func (domain *OrganisationDomain) Stop(context context.Context) error {
+	return nil
 }

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"context"
+
 	"github.com/ekko-earth/impact/internal/organisation/core/data/entities"
 	"github.com/ekko-earth/impact/internal/organisation/core/events"
 	"github.com/ekko-earth/impact/internal/organisation/core/repositories"
@@ -18,10 +20,13 @@ func NewOrganisationOnboardedEventHandler(
 	}
 }
 
-func (handler *OrganisationOnboardedEventHandler) Handle(message events.OrganisationOnboardedEvent) (any, error) {
+func (handler *OrganisationOnboardedEventHandler) Handle(
+	message events.OrganisationOnboardedEvent,
+	context context.Context,
+) (any, error) {
 	handler.repository.OnboardOrganisation(entities.Organisation{
 		Id: message.OrganisationId,
-	})
+	}, context)
 
 	return message.OrganisationId, nil
 }

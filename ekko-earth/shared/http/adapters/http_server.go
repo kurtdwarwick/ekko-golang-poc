@@ -28,7 +28,7 @@ func NewHttpServer(configuration HttpServerConfiguration) *HttpServer {
 	return &HttpServer{Server: httpServer, Router: router}
 }
 
-func (server *HttpServer) Start() {
+func (server *HttpServer) Start(context context.Context) error {
 	slog.Info("Starting HTTP consumer")
 
 	go func() {
@@ -36,10 +36,14 @@ func (server *HttpServer) Start() {
 			slog.Error("Failed to listen and serve", "error", err)
 		}
 	}()
+
+	return nil
 }
 
-func (server *HttpServer) Stop() {
+func (server *HttpServer) Stop(context context.Context) error {
 	slog.Info("Stopping HTTP consumer")
 
-	server.Server.Shutdown(context.TODO())
+	err := server.Server.Shutdown(context)
+
+	return err
 }

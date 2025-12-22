@@ -1,6 +1,8 @@
 package adapters
 
+import "context"
+
 type MessageBus interface {
-	Connect() error
-	Disconnect() error
+	Connect(context context.Context) error
+	Disconnect(context context.Context) error
 }

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"errors"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/access"
@@ -27,8 +28,12 @@ func NewOrganisationRepository(
 	}
 }
 
-func ValidateUniqueness(organisation entities.Organisation, organisationDao access.OrganisationDAO) error {
-	count, err := organisationDao.Count(&entities.Organisation{LegalName: organisation.LegalName})
+func ValidateUniqueness(
+	organisation entities.Organisation,
+	organisationDao access.OrganisationDAO,
+	context context.Context,
+) error {
+	count, err := organisationDao.Count(&entities.Organisation{LegalName: organisation.LegalName}, context)
 
 	if err != nil {
 		return err
@@ -41,8 +46,11 @@ func ValidateUniqueness(organisation entities.Organisation, organisationDao acce
 	return nil
 }
 
-func (repository *OrganisationRepository) OnboardOrganisation(organisation entities.Organisation) (*uuid.UUID, error) {
-	err := ValidateUniqueness(organisation, repository.organisationDao)
+func (repository *OrganisationRepository) OnboardOrganisation(
+	organisation entities.Organisation,
+	context context.Context,
+) (*uuid.UUID, error) {
+	err := ValidateUniqueness(organisation, repository.organisationDao, context)
 
 	if err != nil {
 		return nil, err
@@ -58,7 +66,7 @@ func (repository *OrganisationRepository) OnboardOrganisation(organisation entit
 
 	organisation.Id = organisationId
 
-	err = repository.organisationDao.Create(&organisation)
+	err = repository.organisationDao.Create(&organisation, context)
 
 	return &organisationId, err
 }

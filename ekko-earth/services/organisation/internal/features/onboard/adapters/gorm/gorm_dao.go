@@ -21,9 +21,7 @@ func NewGormOrganizationDAO(database gormAdapters.GormDatabase) *GormOrganisatio
 	return &GormOrganisationDAO{db: database.Database}
 }
 
-func (dao *GormOrganisationDAO) Create(organisation *entities.Organisation) error {
-	context := context.TODO()
-
+func (dao *GormOrganisationDAO) Create(organisation *entities.Organisation, context context.Context) error {
 	err := dao.db.Transaction(func(tx *gorm.DB) error {
 		err := gorm.G[models.OrganisationModel](dao.db).Create(context, &models.OrganisationModel{
 			GormModel: gormAdapters.GormModel{
@@ -44,7 +42,7 @@ func (dao *GormOrganisationDAO) Create(organisation *entities.Organisation) erro
 	return err
 }
 
-func (dao *GormOrganisationDAO) Count(organisation *entities.Organisation) (int32, error) {
+func (dao *GormOrganisationDAO) Count(organisation *entities.Organisation, context context.Context) (int32, error) {
 	var count int64
 
 	err := dao.db.Model(&models.OrganisationModel{}).Where(&models.OrganisationModel{

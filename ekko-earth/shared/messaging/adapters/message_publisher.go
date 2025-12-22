@@ -11,5 +11,5 @@ type MessagePublisherConfiguration struct {
 }
 
 type MessagePublisher interface {
-	Publish(message messaging.HasMessageType, context *context.Context) error
+	Publish(message messaging.HasMessageType, context context.Context) error
 }

@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"net"
@@ -32,7 +33,7 @@ func NewGrpcServer(configuration GrpcServerConfiguration) *GrpcServer {
 	return &GrpcServer{Server: server, Listener: listener}
 }
 
-func (server *GrpcServer) Start() {
+func (server *GrpcServer) Start(context context.Context) error {
 	slog.Info("Starting GRPC consumer")
 
 	go func() {
@@ -40,10 +41,14 @@ func (server *GrpcServer) Start() {
 			slog.Error("Failed to accept", "error", err)
 		}
 	}()
+
+	return nil
 }
 
-func (server *GrpcServer) Stop() {
+func (server *GrpcServer) Stop(context context.Context) error {
 	slog.Info("Stopping GRPC consumer")
 
 	server.Listener.Close()
+
+	return nil
 }

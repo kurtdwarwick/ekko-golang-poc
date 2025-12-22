@@ -1,6 +1,7 @@
 package onboard
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -116,12 +117,16 @@ func NewOnboardFeature(
 	}
 }
 
-func (feature *OnboardFeature) Start() {
-	feature.server.Start()
-	feature.database.Connect()
+func (feature *OnboardFeature) Start(context context.Context) error {
+	feature.server.Start(context)
+	feature.database.Connect(context)
+
+	return nil
 }
 
-func (feature *OnboardFeature) Stop() {
-	feature.server.Stop()
-	feature.database.Disconnect()
+func (feature *OnboardFeature) Stop(context context.Context) error {
+	feature.server.Stop(context)
+	feature.database.Disconnect(context)
+
+	return nil
 }

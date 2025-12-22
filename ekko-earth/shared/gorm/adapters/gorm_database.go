@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -46,10 +47,10 @@ func NewGormDatabase(configuration adapters.DatabaseConfiguration) *GormDatabase
 	return &GormDatabase{configuration: configuration, Database: database}
 }
 
-func (database *GormDatabase) Connect() error {
+func (database *GormDatabase) Connect(context context.Context) error {
 	return nil
 }
 
-func (database *GormDatabase) Disconnect() error {
+func (database *GormDatabase) Disconnect(context context.Context) error {
 	return nil
 }

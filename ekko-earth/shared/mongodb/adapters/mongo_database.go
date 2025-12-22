@@ -45,16 +45,12 @@ func NewMongoDatabase(configuration MongoDatabaseConfiguration) *MongoDatabase {
 	return &MongoDatabase{Configuration: configuration, Client: client}
 }
 
-func (database *MongoDatabase) Connect() error {
+func (database *MongoDatabase) Connect(context context.Context) error {
 	return nil
 }
 
-func (database *MongoDatabase) Disconnect() error {
-	err := database.Client.Disconnect(context.TODO())
+func (database *MongoDatabase) Disconnect(context context.Context) error {
+	err := database.Client.Disconnect(context)
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

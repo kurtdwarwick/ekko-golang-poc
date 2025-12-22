@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"context"
+
 	"github.com/ekko-earth/impact/internal/organisation/core/data/access"
 	"github.com/ekko-earth/impact/internal/organisation/core/data/entities"
 )
@@ -17,8 +19,11 @@ func NewOrganisationRepository(
 	}
 }
 
-func (repository *OrganisationRepository) OnboardOrganisation(organisation entities.Organisation) error {
-	err := repository.organisationDao.Save(&organisation)
+func (repository *OrganisationRepository) OnboardOrganisation(
+	organisation entities.Organisation,
+	context context.Context,
+) error {
+	err := repository.organisationDao.Save(&organisation, context)
 
 	return err
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -16,6 +17,8 @@ import (
 )
 
 func main() {
+	context, cancel := context.WithCancel(context.Background())
+
 	var server adapters.Server
 
 	switch os.Args[1] {
@@ -66,9 +69,10 @@ func main() {
 		database,
 	)
 
-	onboardFeature.Start()
+	onboardFeature.Start(context)
 
-	application.Run()
+	application.Run(context)
 
-	defer onboardFeature.Stop()
+	defer onboardFeature.Stop(context)
+	defer cancel()
 }

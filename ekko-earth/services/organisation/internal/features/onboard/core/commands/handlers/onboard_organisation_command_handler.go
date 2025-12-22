@@ -34,15 +34,14 @@ func NewOnboardOrganisationCommandHandler(
 
 func (handler *OnboardOrganisationCommandHandler) Handle(
 	command commands.OnboardOrganisationCommand,
+	context context.Context,
 ) (any, error) {
-	context := context.TODO()
-
 	organisationId, err := handler.repository.OnboardOrganisation(
 		entities.Organisation{
 			LegalName:   command.LegalName,
 			TradingName: command.TradingName,
 			Website:     command.Website,
-		})
+		}, context)
 
 	if err != nil {
 		slog.Error("Failed to onboard organisation", "error", err)
@@ -63,12 +62,12 @@ func (handler *OnboardOrganisationCommandHandler) Handle(
 		Website:        command.Website,
 	}
 
-	err = handler.messagePublisher.Publish(&event, &context)
+	err = handler.messagePublisher.Publish(&event, context)
 
 	if err != nil {
 		slog.Error("Failed to publish message", "error", err)
 		return nil, err
 	}
 
-	return &event, nil
+	return organisationId, nil
 }

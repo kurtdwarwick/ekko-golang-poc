@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strconv"
@@ -46,11 +47,11 @@ func NewRabbitMQMessageBus(configuration RabbitMQMessageBusConfiguration) *Rabbi
 	}
 }
 
-func (bus *RabbitMQMessageBus) Connect() error {
+func (bus *RabbitMQMessageBus) Connect(context context.Context) error {
 	return nil
 }
 
-func (bus *RabbitMQMessageBus) Disconnect() error {
+func (bus *RabbitMQMessageBus) Disconnect(context context.Context) error {
 	bus.Connection.Close()
 	bus.Channel.Close()
 

@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/ekko-earth/shared/messaging"
@@ -64,7 +65,11 @@ func NewRabbitMQMessageConsumer[TIncomingMessage any, TMessage any](
 				panic(err)
 			}
 
-			messageHandler.Handle(translatedMessage)
+			context, cancel := context.WithCancel(context.Background())
+
+			messageHandler.Handle(translatedMessage, context)
+
+			cancel()
 		}
 	}()
 

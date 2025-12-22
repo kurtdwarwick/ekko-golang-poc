@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/ekko-earth/impact/internal/organisation"
 	"github.com/ekko-earth/shared/application"
 
@@ -9,6 +11,8 @@ import (
 )
 
 func main() {
+	context, cancel := context.WithCancel(context.Background())
+
 	database := mongoAdapters.NewMongoDatabase(mongoAdapters.MongoDatabaseConfiguration{
 		Host:     "localhost",
 		Port:     27017,
@@ -38,9 +42,10 @@ func main() {
 		inboundMessageBus,
 	)
 
-	organisationDomain.Start()
+	organisationDomain.Start(context)
 
-	application.Run()
+	application.Run(context)
 
-	defer organisationDomain.Stop()
+	defer organisationDomain.Stop(context)
+	defer cancel()
 }

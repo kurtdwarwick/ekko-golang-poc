@@ -50,7 +50,7 @@ func (consumer *OnboardOrganisationGrpcConsumer) OnboardOrganisation(
 		Website:     request.Website,
 	}
 
-	result, err := consumer.onboardOrganisationCommandHandler.Handle(command)
+	result, err := consumer.onboardOrganisationCommandHandler.Handle(command, context)
 
 	organisationId := result.(*organisationEvents.OrganisationOnboardedEvent).OrganisationId.String()
 

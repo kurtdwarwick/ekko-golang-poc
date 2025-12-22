@@ -52,7 +52,7 @@ func handle[TIncomingMessage any, TMessage any](
 		return err
 	}
 
-	result, err := messageHandler.Handle(translatedMessage)
+	result, err := messageHandler.Handle(translatedMessage, request.Context())
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)

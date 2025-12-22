@@ -10,6 +10,8 @@
 package access
 
 import (
+	"context"
+
 	reflect "reflect"
 
 	entities "github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
@@ -41,7 +43,7 @@ func (m *MockOrganisationDAO) EXPECT() *MockOrganisationDAOMockRecorder {
 }
 
 // Count mocks base method.
-func (m *MockOrganisationDAO) Count(organisation *entities.Organisation) (int32, error) {
+func (m *MockOrganisationDAO) Count(organisation *entities.Organisation, context context.Context	) (int32, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Count", organisation)
 	ret0, _ := ret[0].(int32)
@@ -50,13 +52,13 @@ func (m *MockOrganisationDAO) Count(organisation *entities.Organisation) (int32,
 }
 
 // Count indicates an expected call of Count.
-func (mr *MockOrganisationDAOMockRecorder) Count(organisation any) *gomock.Call {
+func (mr *MockOrganisationDAOMockRecorder) Count(organisation any, context context.Context) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockOrganisationDAO)(nil).Count), organisation)
 }
 
 // Create mocks base method.
-func (m *MockOrganisationDAO) Create(organisation *entities.Organisation) error {
+func (m *MockOrganisationDAO) Create(organisation *entities.Organisation, context context.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", organisation)
 	ret0, _ := ret[0].(error)
@@ -64,7 +66,7 @@ func (m *MockOrganisationDAO) Create(organisation *entities.Organisation) error 
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockOrganisationDAOMockRecorder) Create(organisation any) *gomock.Call {
+func (mr *MockOrganisationDAOMockRecorder) Create(organisation any, context context.Context) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrganisationDAO)(nil).Create), organisation)
 }

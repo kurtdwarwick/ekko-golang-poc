@@ -1,5 +1,7 @@
 package adapters
 
+import "context"
+
 type DatabaseConfiguration struct {
 	Host     string
 	Port     int
@@ -10,6 +12,6 @@ type DatabaseConfiguration struct {
 }
 
 type Database interface {
-	Connect() error
-	Disconnect() error
+	Connect(context context.Context) error
+	Disconnect(context context.Context) error
 }
