@@ -3,9 +3,9 @@ package adapters
 import (
 	"context"
 	"encoding/json"
-	"log/slog"
 
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
+	"github.com/google/uuid"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -49,10 +49,15 @@ func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ct
 		exchange = *publisher.Configuration.Exchange
 	}
 
-	slog.Info("Declaring queue", "topic", topic)
-	slog.Info("Message", "message", message)
+	traceId := ctx.Value("traceId")
 
-	publisher.MessageBus.Channel.QueueDeclare(
+	if traceId == nil {
+		traceId = uuid.New().String()
+	}
+
+	channel := publisher.MessageBus.GetChannel(traceId.(string))
+
+	channel.QueueDeclare(
 		topic,
 		publisher.Configuration.Durable,
 		publisher.Configuration.Exclusive,
@@ -61,7 +66,7 @@ func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ct
 		nil,
 	)
 
-	err = publisher.MessageBus.Channel.PublishWithContext(
+	err = channel.PublishWithContext(
 		ctx,
 		exchange,
 		topic,
@@ -74,7 +79,7 @@ func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ct
 	)
 
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	return nil

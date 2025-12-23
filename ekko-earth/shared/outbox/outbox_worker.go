@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/denisbrodbeck/machineid"
+	"github.com/google/uuid"
 
 	"github.com/ekko-earth/shared/adapters"
 
@@ -65,7 +66,7 @@ func (worker *OutboxWorker) Start(ctx context.Context) error {
 	processChannel := make(chan OutboxMessage, worker.configuration.MaxWorkers)
 
 	for range worker.configuration.MaxWorkers {
-		go worker.processMessage(processChannel, ctx)
+		go worker.processMessage(processChannel, context.WithValue(ctx, "traceId", uuid.New().String()))
 	}
 
 	ticker := time.NewTicker(worker.configuration.PollInterval)
@@ -129,7 +130,7 @@ func (worker *OutboxWorker) execute(channel chan OutboxMessage, ctx context.Cont
 		return err
 	}
 
-	slog.Info("Unsent messages", "unsentMessages", unsentMessages)
+	slog.Info("Processing unsent messages", "unsentMessages", len(unsentMessages.([]OutboxMessage)))
 
 	worker.processUnsentMessages(channel, unsentMessages.([]OutboxMessage))
 
@@ -151,8 +152,6 @@ func (worker *OutboxWorker) processMessage(channel chan OutboxMessage, ctx conte
 		case <-ctx.Done():
 			return
 		case unsentMessage := <-channel:
-			slog.Info("Publishing message", "message", unsentMessage)
-
 			err := worker.messagePublisher.Publish(
 				unsentMessage.Message,
 				unsentMessage.MessageType,

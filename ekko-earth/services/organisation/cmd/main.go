@@ -80,7 +80,7 @@ func main() {
 		outboundMessagePublisher,
 		outbox.OutboxWorkerConfiguration{
 			PollInterval: time.Second,
-			BatchSize:    1000,
+			BatchSize:    10000,
 			MaxWorkers:   10,
 		},
 	)

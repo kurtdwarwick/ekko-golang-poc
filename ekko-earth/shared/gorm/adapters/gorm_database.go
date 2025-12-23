@@ -37,7 +37,7 @@ func NewGormDatabase(configuration adapters.DatabaseConfiguration) *GormDatabase
 		configuration.Schema,
 	)
 
-	slog.Info("Connecting to PostgreSQL", "host", host)
+	slog.Info("Connecting to PostgreSQL")
 
 	database, err := gorm.Open(postgres.Open(host), config)
 

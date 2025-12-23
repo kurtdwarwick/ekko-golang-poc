@@ -19,7 +19,7 @@ type RabbitMQMessageBusConfiguration struct {
 }
 
 type RabbitMQMessageBus struct {
-	Channel    *amqp.Channel
+	Channels   map[string]*amqp.Channel
 	Connection *amqp.Connection
 }
 
@@ -27,7 +27,7 @@ func NewRabbitMQMessageBus(configuration RabbitMQMessageBusConfiguration) *Rabbi
 	address := net.JoinHostPort(configuration.Host, strconv.Itoa(configuration.Port))
 	host := fmt.Sprintf("amqp://%s:%s@%s", configuration.Username, configuration.Password, address)
 
-	slog.Info("Connecting to RabbitMQ", "host", host)
+	slog.Info("Connecting to RabbitMQ")
 
 	connection, err := amqp.Dial(host)
 
@@ -35,16 +35,24 @@ func NewRabbitMQMessageBus(configuration RabbitMQMessageBusConfiguration) *Rabbi
 		panic(err)
 	}
 
-	channel, err := connection.Channel()
-
-	if err != nil {
-		panic(err)
-	}
-
 	return &RabbitMQMessageBus{
 		Connection: connection,
-		Channel:    channel,
+		Channels:   make(map[string]*amqp.Channel),
 	}
+}
+
+func (bus *RabbitMQMessageBus) GetChannel(key string) *amqp.Channel {
+	if _, ok := bus.Channels[key]; !ok {
+		channel, err := bus.Connection.Channel()
+
+		if err != nil {
+			panic(err)
+		}
+
+		bus.Channels[key] = channel
+	}
+
+	return bus.Channels[key]
 }
 
 func (bus *RabbitMQMessageBus) Connect(ctx context.Context) error {
@@ -53,7 +61,10 @@ func (bus *RabbitMQMessageBus) Connect(ctx context.Context) error {
 
 func (bus *RabbitMQMessageBus) Disconnect(ctx context.Context) error {
 	bus.Connection.Close()
-	bus.Channel.Close()
+
+	for _, channel := range bus.Channels {
+		channel.Close()
+	}
 
 	return nil
 }

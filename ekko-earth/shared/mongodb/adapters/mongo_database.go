@@ -34,7 +34,7 @@ func NewMongoDatabase(configuration MongoDatabaseConfiguration) *MongoDatabase {
 		configuration.Database,
 	)
 
-	slog.Info("Connecting to MongoDB", "host", host)
+	slog.Info("Connecting to MongoDB")
 
 	client, err := mongo.Connect(options.Client().ApplyURI(host))
 
@@ -50,7 +50,7 @@ func (database *MongoDatabase) Connect(ctx context.Context) error {
 }
 
 func (database *MongoDatabase) Disconnect(ctx context.Context) error {
-	err := database.Client.Disconnect(context)
+	err := database.Client.Disconnect(ctx)
 
 	return err
 }
