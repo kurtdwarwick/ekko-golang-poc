@@ -12,6 +12,6 @@ type DatabaseConfiguration struct {
 }
 
 type Database interface {
-	Connect(context context.Context) error
-	Disconnect(context context.Context) error
+	Connect(ctx context.Context) error
+	Disconnect(ctx context.Context) error
 }

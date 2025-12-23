@@ -10,11 +10,11 @@
 package access
 
 import (
-	"context"
-
+	context "context"
 	reflect "reflect"
 
 	entities "github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
+	adapters "github.com/ekko-earth/shared/adapters"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -43,30 +43,30 @@ func (m *MockOrganisationDAO) EXPECT() *MockOrganisationDAOMockRecorder {
 }
 
 // Count mocks base method.
-func (m *MockOrganisationDAO) Count(organisation *entities.Organisation, context context.Context	) (int32, error) {
+func (m *MockOrganisationDAO) Count(organisation *entities.Organisation, transaction adapters.Transaction, arg2 context.Context) (int32, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Count", organisation)
+	ret := m.ctrl.Call(m, "Count", organisation, transaction, arg2)
 	ret0, _ := ret[0].(int32)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Count indicates an expected call of Count.
-func (mr *MockOrganisationDAOMockRecorder) Count(organisation any, context context.Context) *gomock.Call {
+func (mr *MockOrganisationDAOMockRecorder) Count(organisation, transaction, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockOrganisationDAO)(nil).Count), organisation)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Count", reflect.TypeOf((*MockOrganisationDAO)(nil).Count), organisation, transaction, arg2)
 }
 
 // Create mocks base method.
-func (m *MockOrganisationDAO) Create(organisation *entities.Organisation, context context.Context) error {
+func (m *MockOrganisationDAO) Create(organisation *entities.Organisation, transaction adapters.Transaction, arg2 context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", organisation)
+	ret := m.ctrl.Call(m, "Create", organisation, transaction, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockOrganisationDAOMockRecorder) Create(organisation any, context context.Context) *gomock.Call {
+func (mr *MockOrganisationDAOMockRecorder) Create(organisation, transaction, arg2 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrganisationDAO)(nil).Create), organisation)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockOrganisationDAO)(nil).Create), organisation, transaction, arg2)
 }

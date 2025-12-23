@@ -41,7 +41,7 @@ func NewOnboardOrganisationGrpcConsumer(
 }
 
 func (consumer *OnboardOrganisationGrpcConsumer) OnboardOrganisation(
-	context context.Context,
+	ctx context.Context,
 	request *proto.OnboardOrganisationRequest,
 ) (*proto.OnboardOrganisationResponse, error) {
 	command := organisationCommands.OnboardOrganisationCommand{
@@ -50,7 +50,7 @@ func (consumer *OnboardOrganisationGrpcConsumer) OnboardOrganisation(
 		Website:     request.Website,
 	}
 
-	result, err := consumer.onboardOrganisationCommandHandler.Handle(command, context)
+	result, err := consumer.onboardOrganisationCommandHandler.Handle(command, ctx)
 
 	organisationId := result.(*organisationEvents.OrganisationOnboardedEvent).OrganisationId.String()
 

@@ -6,6 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/ekko-earth/shared/adapters"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -47,10 +48,10 @@ func NewGormDatabase(configuration adapters.DatabaseConfiguration) *GormDatabase
 	return &GormDatabase{configuration: configuration, Database: database}
 }
 
-func (database *GormDatabase) Connect(context context.Context) error {
+func (database *GormDatabase) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (database *GormDatabase) Disconnect(context context.Context) error {
+func (database *GormDatabase) Disconnect(ctx context.Context) error {
 	return nil
 }

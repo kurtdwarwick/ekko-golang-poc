@@ -22,11 +22,11 @@ func NewOrganisationOnboardedEventHandler(
 
 func (handler *OrganisationOnboardedEventHandler) Handle(
 	message events.OrganisationOnboardedEvent,
-	context context.Context,
+	ctx context.Context,
 ) (any, error) {
 	handler.repository.OnboardOrganisation(entities.Organisation{
 		Id: message.OrganisationId,
-	}, context)
+	}, ctx)
 
 	return message.OrganisationId, nil
 }

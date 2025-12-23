@@ -1,5 +1,7 @@
 package policies
 
+import "log/slog"
+
 type Policy interface {
 	Apply(value any) error
 }
@@ -9,6 +11,8 @@ type PolicyHandler struct {
 }
 
 func NewPolicyHandler(policies ...Policy) *PolicyHandler {
+	slog.Debug("Creating policy handler")
+
 	return &PolicyHandler{
 		Policies: policies,
 	}

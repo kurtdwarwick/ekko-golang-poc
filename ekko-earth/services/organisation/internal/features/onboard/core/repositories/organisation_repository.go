@@ -7,15 +7,15 @@ import (
 	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/access"
 	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
 
-	"github.com/google/uuid"
-
+	"github.com/ekko-earth/shared/adapters"
 	"github.com/ekko-earth/shared/policies"
+
+	"github.com/google/uuid"
 )
 
 type OrganisationRepository struct {
 	organisationDao access.OrganisationDAO
-
-	policyHandler policies.PolicyHandler
+	policyHandler   policies.PolicyHandler
 }
 
 func NewOrganisationRepository(
@@ -31,9 +31,10 @@ func NewOrganisationRepository(
 func ValidateUniqueness(
 	organisation entities.Organisation,
 	organisationDao access.OrganisationDAO,
-	context context.Context,
+	transaction adapters.Transaction,
+	ctx context.Context,
 ) error {
-	count, err := organisationDao.Count(&entities.Organisation{LegalName: organisation.LegalName}, context)
+	count, err := organisationDao.Count(&entities.Organisation{LegalName: organisation.LegalName}, transaction, ctx)
 
 	if err != nil {
 		return err
@@ -48,9 +49,10 @@ func ValidateUniqueness(
 
 func (repository *OrganisationRepository) OnboardOrganisation(
 	organisation entities.Organisation,
-	context context.Context,
+	transaction adapters.Transaction,
+	ctx context.Context,
 ) (*uuid.UUID, error) {
-	err := ValidateUniqueness(organisation, repository.organisationDao, context)
+	err := ValidateUniqueness(organisation, repository.organisationDao, transaction, ctx)
 
 	if err != nil {
 		return nil, err
@@ -66,7 +68,7 @@ func (repository *OrganisationRepository) OnboardOrganisation(
 
 	organisation.Id = organisationId
 
-	err = repository.organisationDao.Create(&organisation, context)
+	err = repository.organisationDao.Create(&organisation, transaction, ctx)
 
 	return &organisationId, err
 }

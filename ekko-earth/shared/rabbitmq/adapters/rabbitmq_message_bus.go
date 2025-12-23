@@ -47,11 +47,11 @@ func NewRabbitMQMessageBus(configuration RabbitMQMessageBusConfiguration) *Rabbi
 	}
 }
 
-func (bus *RabbitMQMessageBus) Connect(context context.Context) error {
+func (bus *RabbitMQMessageBus) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (bus *RabbitMQMessageBus) Disconnect(context context.Context) error {
+func (bus *RabbitMQMessageBus) Disconnect(ctx context.Context) error {
 	bus.Connection.Close()
 	bus.Channel.Close()
 

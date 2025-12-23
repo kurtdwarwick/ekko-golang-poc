@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"log/slog"
 
-	"github.com/ekko-earth/shared/messaging"
-
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -38,7 +36,7 @@ func NewRabbitMQMessagePublisher(
 	}
 }
 
-func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageType, context context.Context) error {
+func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ctx context.Context) error {
 	body, err := json.Marshal(message)
 
 	if err != nil {
@@ -51,11 +49,11 @@ func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageT
 		exchange = *publisher.Configuration.Exchange
 	}
 
-	slog.Info("Declaring queue", "destination", message.GetMessageType())
+	slog.Info("Declaring queue", "topic", topic)
 	slog.Info("Message", "message", message)
 
 	publisher.MessageBus.Channel.QueueDeclare(
-		message.GetMessageType(),
+		topic,
 		publisher.Configuration.Durable,
 		publisher.Configuration.Exclusive,
 		publisher.Configuration.AutoDelete,
@@ -64,9 +62,9 @@ func (publisher *RabbitMQMessagePublisher) Publish(message messaging.HasMessageT
 	)
 
 	err = publisher.MessageBus.Channel.PublishWithContext(
-		context,
+		ctx,
 		exchange,
-		message.GetMessageType(),
+		topic,
 		false,
 		false,
 		amqp.Publishing{

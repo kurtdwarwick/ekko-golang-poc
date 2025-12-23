@@ -9,7 +9,7 @@ import (
 	"syscall"
 )
 
-func Run(context context.Context) {
+func Run(ctx context.Context) {
 	var waitGroup sync.WaitGroup
 
 	waitGroup.Add(1)
@@ -22,7 +22,7 @@ func Run(context context.Context) {
 		defer waitGroup.Done()
 
 		select {
-		case <-context.Done():
+		case <-ctx.Done():
 			slog.Info("Application context cancelled")
 			return
 		case <-process:

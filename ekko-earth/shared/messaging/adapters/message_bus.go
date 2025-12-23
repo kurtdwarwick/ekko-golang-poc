@@ -3,6 +3,6 @@ package adapters
 import "context"
 
 type MessageBus interface {
-	Connect(context context.Context) error
-	Disconnect(context context.Context) error
+	Connect(ctx context.Context) error
+	Disconnect(ctx context.Context) error
 }

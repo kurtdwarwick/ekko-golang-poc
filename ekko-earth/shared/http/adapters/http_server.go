@@ -28,7 +28,7 @@ func NewHttpServer(configuration HttpServerConfiguration) *HttpServer {
 	return &HttpServer{Server: httpServer, Router: router}
 }
 
-func (server *HttpServer) Start(context context.Context) error {
+func (server *HttpServer) Start(ctx context.Context) error {
 	slog.Info("Starting HTTP consumer")
 
 	go func() {
@@ -40,10 +40,10 @@ func (server *HttpServer) Start(context context.Context) error {
 	return nil
 }
 
-func (server *HttpServer) Stop(context context.Context) error {
+func (server *HttpServer) Stop(ctx context.Context) error {
 	slog.Info("Stopping HTTP consumer")
 
-	err := server.Server.Shutdown(context)
+	err := server.Server.Shutdown(ctx)
 
 	return err
 }

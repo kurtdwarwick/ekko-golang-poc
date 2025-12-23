@@ -2,14 +2,10 @@ package adapters
 
 import (
 	"context"
-
-	"github.com/ekko-earth/shared/messaging"
 )
 
-type MessagePublisherConfiguration struct {
-	Destination string
-}
+type MessagePublisherConfiguration struct{}
 
 type MessagePublisher interface {
-	Publish(message messaging.HasMessageType, context context.Context) error
+	Publish(message any, topic string, ctx context.Context) error
 }

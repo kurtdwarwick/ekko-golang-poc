@@ -7,5 +7,5 @@ import (
 )
 
 type OrganisationDAO interface {
-	Save(organisation *entities.Organisation, context context.Context) error
+	Save(organisation *entities.Organisation, ctx context.Context) error
 }

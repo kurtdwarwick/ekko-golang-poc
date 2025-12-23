@@ -51,10 +51,10 @@ func NewOrganisationDomain(
 	return &OrganisationDomain{}
 }
 
-func (domain *OrganisationDomain) Start(context context.Context) error {
+func (domain *OrganisationDomain) Start(ctx context.Context) error {
 	return nil
 }
 
-func (domain *OrganisationDomain) Stop(context context.Context) error {
+func (domain *OrganisationDomain) Stop(ctx context.Context) error {
 	return nil
 }

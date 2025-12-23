@@ -21,9 +21,9 @@ func NewOrganisationRepository(
 
 func (repository *OrganisationRepository) OnboardOrganisation(
 	organisation entities.Organisation,
-	context context.Context,
+	ctx context.Context,
 ) error {
-	err := repository.organisationDao.Save(&organisation, context)
+	err := repository.organisationDao.Save(&organisation, ctx)
 
 	return err
 }

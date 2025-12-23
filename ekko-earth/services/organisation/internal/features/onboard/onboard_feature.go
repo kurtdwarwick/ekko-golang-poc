@@ -8,6 +8,7 @@ import (
 
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/grpc"
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/http"
+	"github.com/ekko-earth/shared/outbox"
 	"github.com/ekko-earth/shared/policies"
 
 	adapters "github.com/ekko-earth/shared/adapters"
@@ -17,8 +18,6 @@ import (
 	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
 
-	rabbitmqAdapters "github.com/ekko-earth/shared/rabbitmq/adapters"
-
 	organisationGormAccess "github.com/ekko-earth/organisation/internal/features/onboard/adapters/gorm"
 	organisationCommandHandlers "github.com/ekko-earth/organisation/internal/features/onboard/core/commands/handlers"
 	organisationPolicies "github.com/ekko-earth/organisation/internal/features/onboard/core/policies"
@@ -26,36 +25,18 @@ import (
 )
 
 type OnboardFeature struct {
-	inboundMessageBus  messagingAdapters.MessageBus
-	outboundMessageBus messagingAdapters.MessageBus
-	server             adapters.Server
-	database           adapters.Database
+	outboundMessagePublisher messagingAdapters.MessagePublisher
+	server                   adapters.Server
+	database                 adapters.Database
 }
 
 func NewOnboardFeature(
-	inboundMessageBus messagingAdapters.MessageBus,
-	outboundMessageBus messagingAdapters.MessageBus,
+	outboundMessagePublisher messagingAdapters.MessagePublisher,
 	server adapters.Server,
 	database adapters.Database,
+	outboxRepository *outbox.OutboxRepository,
+	unitOfWork adapters.UnitOfWork,
 ) *OnboardFeature {
-
-	outboundRabbitMQMessageBus := outboundMessageBus.(*rabbitmqAdapters.RabbitMQMessageBus)
-
-	outboundMessagePublisher := rabbitmqAdapters.NewRabbitMQMessagePublisher(
-		*outboundRabbitMQMessageBus,
-		rabbitmqAdapters.RabbitMQMessagePublisherConfiguration{
-			MessagePublisherConfiguration: messagingAdapters.MessagePublisherConfiguration{
-				Destination: "organisation.onboard",
-			},
-			Durable:    true,
-			Exclusive:  false,
-			AutoDelete: false,
-			NoWait:     false,
-		},
-	)
-
-	slog.Info("Creating policy handler")
-
 	policyHandler := policies.NewPolicyHandler(
 		organisationPolicies.LegalNameValidationPolicy{},
 		organisationPolicies.TradingNameValidationPolicy{},
@@ -64,6 +45,7 @@ func NewOnboardFeature(
 	slog.Info("Creating organisation DAO")
 
 	gormDatabase := database.(*gormAdapters.GormDatabase)
+
 	organisationDao := organisationGormAccess.NewGormOrganizationDAO(*gormDatabase)
 
 	slog.Info("Creating repository")
@@ -77,7 +59,9 @@ func NewOnboardFeature(
 
 	onboardOrganisationCommandHandler := organisationCommandHandlers.NewOnboardOrganisationCommandHandler(
 		repository,
+		unitOfWork,
 		outboundMessagePublisher,
+		outboxRepository,
 	)
 
 	switch os.Args[1] {
@@ -117,16 +101,16 @@ func NewOnboardFeature(
 	}
 }
 
-func (feature *OnboardFeature) Start(context context.Context) error {
-	feature.server.Start(context)
-	feature.database.Connect(context)
+func (feature *OnboardFeature) Start(ctx context.Context) error {
+	feature.server.Start(ctx)
+	feature.database.Connect(ctx)
 
 	return nil
 }
 
-func (feature *OnboardFeature) Stop(context context.Context) error {
-	feature.server.Stop(context)
-	feature.database.Disconnect(context)
+func (feature *OnboardFeature) Stop(ctx context.Context) error {
+	feature.server.Stop(ctx)
+	feature.database.Disconnect(ctx)
 
 	return nil
 }

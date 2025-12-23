@@ -33,7 +33,7 @@ func NewGrpcServer(configuration GrpcServerConfiguration) *GrpcServer {
 	return &GrpcServer{Server: server, Listener: listener}
 }
 
-func (server *GrpcServer) Start(context context.Context) error {
+func (server *GrpcServer) Start(ctx context.Context) error {
 	slog.Info("Starting GRPC consumer")
 
 	go func() {
@@ -45,7 +45,7 @@ func (server *GrpcServer) Start(context context.Context) error {
 	return nil
 }
 
-func (server *GrpcServer) Stop(context context.Context) error {
+func (server *GrpcServer) Stop(ctx context.Context) error {
 	slog.Info("Stopping GRPC consumer")
 
 	server.Listener.Close()
