@@ -1,0 +1,22 @@
+package adapters
+
+import (
+	"time"
+
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
+)
+
+func NewMeterProvider() (*metric.MeterProvider, error) {
+	metricExporter, err := stdoutmetric.New()
+
+	if err != nil {
+		return nil, err
+	}
+
+	meterProvider := metric.NewMeterProvider(
+		metric.WithReader(metric.NewPeriodicReader(metricExporter, metric.WithInterval(3*time.Second))),
+	)
+
+	return meterProvider, nil
+}

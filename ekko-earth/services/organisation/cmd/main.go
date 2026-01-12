@@ -2,9 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"os"
 	"time"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard"
@@ -13,9 +11,9 @@ import (
 
 	adapters "github.com/ekko-earth/shared/adapters"
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
-	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
+	observability "github.com/ekko-earth/shared/observability"
 	observabilityAdapters "github.com/ekko-earth/shared/observability/adapters"
 	outbox "github.com/ekko-earth/shared/outbox"
 	outboxAdapters "github.com/ekko-earth/shared/outbox/adapters/gorm"
@@ -24,38 +22,25 @@ import (
 
 func main() {
 	context, cancel := context.WithCancel(context.Background())
+	shutdown, err := observability.NewInstrumentation(context)
 
 	var server adapters.Server
 
-	switch os.Args[1] {
-	case "http":
-		shutdown, err := observabilityAdapters.ConfigureHttpInstrumenter(context)
-
-		if err != nil {
-			slog.Error("Failed to configure HTTP instrumenter", "error", err)
-			panic(err)
-		}
-
-		defer shutdown(context)
-
-		slog.Info("Creating HTTP server")
-
-		server = httpAdapters.NewHttpServer(httpAdapters.HttpServerConfiguration{
-			Address: ":8080",
-		})
-
-		instrumenter := observabilityAdapters.HttpInstrumenter{}
-		instrumenter.Instrument(*server.(*httpAdapters.HttpServer))
-	case "grpc":
-		slog.Info("Creating GRPC server")
-
-		server = grpcAdapters.NewGrpcServer(grpcAdapters.GrpcServerConfiguration{
-			Network: "tcp",
-			Port:    50051,
-		})
-	default:
-		panic(fmt.Sprintf("invalid consumer: %s", os.Args[1]))
+	if err != nil {
+		slog.Error("Failed to configure HTTP instrumenter", "error", err)
+		panic(err)
 	}
+
+	defer shutdown(context)
+
+	slog.Info("Creating HTTP server")
+
+	server = httpAdapters.NewHttpServer(httpAdapters.HttpServerConfiguration{
+		Address: ":8080",
+	})
+
+	instrumenter := observabilityAdapters.HttpInstrumenter{}
+	instrumenter.Instrument(*server.(*httpAdapters.HttpServer))
 
 	database := gormAdapters.NewGormDatabase(adapters.DatabaseConfiguration{
 		Host:     "localhost",

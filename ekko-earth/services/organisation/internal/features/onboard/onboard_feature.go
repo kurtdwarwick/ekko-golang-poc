@@ -2,11 +2,8 @@ package onboard
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-	"os"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/grpc"
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/http"
 	"github.com/ekko-earth/shared/outbox"
 	"github.com/ekko-earth/shared/policies"
@@ -15,7 +12,6 @@ import (
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
-	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
 
 	organisationGormAccess "github.com/ekko-earth/organisation/internal/features/onboard/adapters/gorm"
@@ -64,29 +60,14 @@ func NewOnboardFeature(
 		outboxRepository,
 	)
 
-	switch os.Args[1] {
-	case "http":
-		slog.Info("Creating HTTP consumer")
+	slog.Info("Creating HTTP consumer")
 
-		httpServer := server.(*httpAdapters.HttpServer)
+	httpServer := server.(*httpAdapters.HttpServer)
 
-		http.NewOnboardOrganisationHttpConsumer(
-			httpServer,
-			onboardOrganisationCommandHandler,
-		)
-	case "grpc":
-		slog.Info("Creating GRPC consumer")
-
-		grpcServer := server.(*grpcAdapters.GrpcServer)
-
-		grpc.NewOnboardOrganisationGrpcConsumer(
-			*grpcServer,
-			onboardOrganisationCommandHandler,
-		)
-
-	default:
-		panic(fmt.Sprintf("invalid consumer: %s", os.Args[1]))
-	}
+	http.NewOnboardOrganisationHttpConsumer(
+		httpServer,
+		onboardOrganisationCommandHandler,
+	)
 
 	return &OnboardFeature{
 		server:   server,

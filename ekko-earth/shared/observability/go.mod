@@ -1,4 +1,4 @@
-module observability
+module github.com/ekko-earth/shared/observability
 
 go 1.25.4
 
@@ -10,6 +10,8 @@ require (
 	go.opentelemetry.io/otel/sdk v1.39.0
 )
 
+require go.opentelemetry.io/otel/sdk/log v0.14.0 // indirect
+
 require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -18,7 +20,11 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.15.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.39.0
+	go.opentelemetry.io/otel/log v0.15.0
 	go.opentelemetry.io/otel/metric v1.39.0 // indirect
+	go.opentelemetry.io/otel/sdk/metric v1.39.0 // indirect
 	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	golang.org/x/sys v0.39.0 // indirect
 )
