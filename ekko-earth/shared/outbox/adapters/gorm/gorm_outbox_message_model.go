@@ -1,14 +1,15 @@
-package outbox
+package gorm
 
 import (
 	"time"
 
-	"github.com/ekko-earth/shared/gorm/adapters"
 	"gorm.io/datatypes"
+
+	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
 )
 
 type GormOutboxMessageModel struct {
-	adapters.GormModel
+	gormAdapters.GormModel
 
 	MessageType string         `gorm:"index"`
 	Message     datatypes.JSON `gorm:"type:jsonb"`

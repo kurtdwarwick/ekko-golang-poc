@@ -10,14 +10,14 @@ import (
 	"github.com/ekko-earth/organisation/internal/features/onboard"
 	"github.com/ekko-earth/organisation/internal/features/query"
 	"github.com/ekko-earth/shared/application"
-	"github.com/ekko-earth/shared/outbox"
 
 	adapters "github.com/ekko-earth/shared/adapters"
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
-	gormOutboxAdapters "github.com/ekko-earth/shared/gorm/adapters/outbox"
 	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
+	outbox "github.com/ekko-earth/shared/outbox"
+	outboxAdapters "github.com/ekko-earth/shared/outbox/adapters/gorm"
 	rabbitmqAdapters "github.com/ekko-earth/shared/rabbitmq/adapters"
 )
 
@@ -73,7 +73,7 @@ func main() {
 
 	unitOfWork := gormAdapters.NewGormUnitOfWork(*database)
 
-	outboxDao := gormOutboxAdapters.NewGormOutboxDAO(*database)
+	outboxDao := outboxAdapters.NewGormOutboxDAO(*database)
 	outboxRepository := outbox.NewOutboxRepository(outboxDao)
 	outboxWorker := outbox.NewOutboxWorker(
 		outboxRepository,

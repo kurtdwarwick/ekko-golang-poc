@@ -1,16 +1,15 @@
-package outbox
+package gorm
 
 import (
 	"context"
 	"encoding/json"
 
 	"github.com/google/uuid"
+	"gorm.io/datatypes"
+	"gorm.io/gorm"
 
 	"github.com/ekko-earth/shared/adapters"
 	"github.com/ekko-earth/shared/outbox"
-
-	"gorm.io/datatypes"
-	"gorm.io/gorm"
 
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
 )
