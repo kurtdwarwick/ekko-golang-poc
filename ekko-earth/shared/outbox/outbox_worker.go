@@ -79,8 +79,6 @@ func (worker *OutboxWorker) Start(ctx context.Context) error {
 
 				return ctx.Err()
 			case <-ticker.C:
-				slog.Info("Executing outbox worker")
-
 				err := worker.execute(processChannel, ctx)
 
 				if err != nil {
@@ -129,8 +127,6 @@ func (worker *OutboxWorker) execute(channel chan OutboxMessage, ctx context.Cont
 		slog.Error("Failed to get unsent messages", "error", err)
 		return err
 	}
-
-	slog.Info("Processing unsent messages", "unsentMessages", len(unsentMessages.([]OutboxMessage)))
 
 	worker.processUnsentMessages(channel, unsentMessages.([]OutboxMessage))
 

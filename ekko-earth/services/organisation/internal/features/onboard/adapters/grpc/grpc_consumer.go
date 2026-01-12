@@ -10,7 +10,6 @@ import (
 	"context"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/grpc/proto"
-	organisationEvents "github.com/ekko-earth/organisation/internal/features/onboard/core/events"
 )
 
 type OnboardOrganisationGrpcConsumer struct {
@@ -50,11 +49,10 @@ func (consumer *OnboardOrganisationGrpcConsumer) OnboardOrganisation(
 		Website:     request.Website,
 	}
 
-	result, err := consumer.onboardOrganisationCommandHandler.Handle(command, ctx)
-
-	organisationId := result.(*organisationEvents.OrganisationOnboardedEvent).OrganisationId.String()
+	organisationId, err := consumer.onboardOrganisationCommandHandler.Handle(command, ctx)
+	organisationIdString := organisationId.String()
 
 	return &proto.OnboardOrganisationResponse{
-		Id: &organisationId,
+		Id: &organisationIdString,
 	}, err
 }

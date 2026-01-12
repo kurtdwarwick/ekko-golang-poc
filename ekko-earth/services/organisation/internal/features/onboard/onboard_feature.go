@@ -70,16 +70,9 @@ func NewOnboardFeature(
 
 		httpServer := server.(*httpAdapters.HttpServer)
 
-		onboardOrganisationHttpDtoMessageTranslator := http.OnboardOrganisationHttpDtoMessageTranslator{}
-
-		httpAdapters.NewHttpConsumer(
-			*httpServer,
-			&onboardOrganisationHttpDtoMessageTranslator,
+		http.NewOnboardOrganisationHttpConsumer(
+			httpServer,
 			onboardOrganisationCommandHandler,
-			httpAdapters.HttpConsumerConfiguration{
-				Route:   "/organisations/onboard",
-				Methods: []string{"POST"},
-			},
 		)
 	case "grpc":
 		slog.Info("Creating GRPC consumer")
@@ -102,15 +95,9 @@ func NewOnboardFeature(
 }
 
 func (feature *OnboardFeature) Start(ctx context.Context) error {
-	feature.server.Start(ctx)
-	feature.database.Connect(ctx)
-
 	return nil
 }
 
 func (feature *OnboardFeature) Stop(ctx context.Context) error {
-	feature.server.Stop(ctx)
-	feature.database.Disconnect(ctx)
-
 	return nil
 }

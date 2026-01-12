@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard"
+	"github.com/ekko-earth/organisation/internal/features/query"
 	"github.com/ekko-earth/shared/application"
 	"github.com/ekko-earth/shared/outbox"
 
@@ -93,12 +94,22 @@ func main() {
 		unitOfWork,
 	)
 
+	queryFeature := query.NewQueryFeature(
+		server,
+		database,
+	)
+
+	server.Start(context)
+	database.Connect(context)
+
 	onboardFeature.Start(context)
+	queryFeature.Start(context)
 	outboxWorker.Start(context)
 
 	application.Run(context)
 
 	onboardFeature.Stop(context)
+	queryFeature.Stop(context)
 	outboxWorker.Stop(context)
 
 	cancel()

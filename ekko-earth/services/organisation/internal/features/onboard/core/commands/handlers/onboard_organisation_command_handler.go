@@ -43,7 +43,7 @@ func NewOnboardOrganisationCommandHandler(
 func (handler *OnboardOrganisationCommandHandler) Handle(
 	command commands.OnboardOrganisationCommand,
 	ctx context.Context,
-) (any, error) {
+) (*uuid.UUID, error) {
 	organisationId, err := handler.unitOfWork.Execute(
 		func(transaction adapters.Transaction, ctx context.Context) (any, error) {
 			organisationId, err := handler.repository.OnboardOrganisation(
@@ -87,5 +87,5 @@ func (handler *OnboardOrganisationCommandHandler) Handle(
 		ctx,
 	)
 
-	return organisationId, err
+	return organisationId.(*uuid.UUID), err
 }

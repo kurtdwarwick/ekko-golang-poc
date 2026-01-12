@@ -1,58 +1,65 @@
 package adapters
 
 import (
+	"context"
 	"encoding/json"
-
+	"io"
 	"net/http"
 
-	"github.com/ekko-earth/shared/messaging"
+	"github.com/gorilla/mux"
 )
 
-type HttpConsumer[TIncomingMessage any, TMessage any] struct{}
+type HttpConsume[TIncomingMessage any, TOutgoingMessage any] interface {
+	Consume(
+		vars map[string]string,
+		body TIncomingMessage,
+		ctx context.Context) (*TOutgoingMessage, error)
+}
+
+type HttpConsumer[TIncomingMessage any, TOutgoingMessage any] struct {
+	Route *mux.Route
+}
 
 type HttpConsumerConfiguration struct {
 	Route   string
 	Methods []string
 }
 
-func NewHttpConsumer[TIncomingMessage any, TMessage any](
-	server HttpServer,
-	messageTranslator messaging.MessageTranslator[TIncomingMessage, TMessage],
-	messageHandler messaging.MessageHandler[TMessage],
+func NewHttpConsumer[TIncomingMessage any, TOutgoingMessage any](
+	server *HttpServer,
 	configuration HttpConsumerConfiguration,
-) *HttpConsumer[TIncomingMessage, TMessage] {
-	organisationsRoute := server.Router.PathPrefix(configuration.Route).Subrouter()
-
-	organisationsRoute.HandleFunc("", func(writer http.ResponseWriter, request *http.Request) {
-		handle(writer, request, messageHandler, messageTranslator)
+	consume HttpConsume[TIncomingMessage, TOutgoingMessage],
+) *HttpConsumer[TIncomingMessage, TOutgoingMessage] {
+	route := server.Router.HandleFunc(configuration.Route, func(writer http.ResponseWriter, request *http.Request) {
+		Handle(writer, request, consume.Consume)
 	}).Methods(configuration.Methods...)
 
-	return &HttpConsumer[TIncomingMessage, TMessage]{}
+	return &HttpConsumer[TIncomingMessage, TOutgoingMessage]{
+		Route: route,
+	}
 }
 
-func handle[TIncomingMessage any, TMessage any](
+func Handle[TIncomingMessage any, TOutgoingMessage any](
 	writer http.ResponseWriter,
 	request *http.Request,
-	messageHandler messaging.MessageHandler[TMessage],
-	messageTranslator messaging.MessageTranslator[TIncomingMessage, TMessage],
+	consume func(map[string]string, TIncomingMessage, context.Context) (*TOutgoingMessage, error),
 ) error {
-	var incomingMessage TIncomingMessage
+	vars := mux.Vars(request)
 
-	err := json.NewDecoder(request.Body).Decode(&incomingMessage)
+	var body TIncomingMessage
 
-	if err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		return err
+	err := json.NewDecoder(request.Body).Decode(&body)
+
+	if request.Body != nil {
+		err := json.NewDecoder(request.Body).Decode(&body)
+
+		if err != nil && err != io.EOF {
+			writer.WriteHeader(http.StatusBadRequest)
+			return err
+		}
 	}
 
-	translatedMessage, err := messageTranslator.Translate(incomingMessage)
-
-	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
-		return err
-	}
-
-	result, err := messageHandler.Handle(translatedMessage, request.Context())
+	result, err := consume(vars, body, request.Context())
 
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
