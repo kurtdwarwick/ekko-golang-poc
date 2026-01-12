@@ -1,0 +1,35 @@
+# Binaries for programs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, generated with go test -c
+*.test
+
+# Output of the go build command
+# For example, a directory named "bin"
+bin/
+out/
+build/
+
+# Dependency directories (especially when using go modules, these are less common now but useful for older projects or specific setups)
+vendor/
+
+# Environment files
+.env
+.env.local
+
+# IDE/Editor-specific files and directories
+.idea/         # IntelliJ IDEA / GoLand
+.vscode/       # VS Code
+*.iml          # IntelliJ IDEA project files
+.project       # Eclipse
+.c9/           # Cloud9
+.DS_Store      # macOS
+Thumbs.db      # Windows
+
+# Go work files
+go.work
+go.work.sum
