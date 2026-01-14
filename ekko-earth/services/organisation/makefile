@@ -3,6 +3,7 @@ build:
 	go build -o ./bin/organisation-server ./cmd/main.go
 
 run: build
+	export OTEL_EXPORTER_OTLP_INSECURE="true"
 	./bin/organisation-server
 
 mockgen:

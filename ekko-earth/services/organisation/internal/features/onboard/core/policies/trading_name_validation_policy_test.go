@@ -3,7 +3,7 @@ package policies_test
 import (
 	"testing"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
 	"github.com/ekko-earth/organisation/internal/features/onboard/core/policies"
 )
 
@@ -14,7 +14,7 @@ func TestTradingNameValidationPolicy_Apply(t *testing.T) {
 	policy := policies.TradingNameValidationPolicy{}
 
 	t.Run("should return an error if the organisation trading name is empty", func(t *testing.T) {
-		organisation := entities.Organisation{
+		organisation := core.Organisation{
 			TradingName: "",
 		}
 
@@ -28,7 +28,7 @@ func TestTradingNameValidationPolicy_Apply(t *testing.T) {
 	t.Run(
 		"should not return an error if the organisation trading name is not empty",
 		func(t *testing.T) {
-			organisation := entities.Organisation{
+			organisation := core.Organisation{
 				TradingName: "Test Organisation",
 			}
 

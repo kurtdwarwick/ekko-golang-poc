@@ -3,7 +3,7 @@ package policies_test
 import (
 	"testing"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
 	"github.com/ekko-earth/organisation/internal/features/onboard/core/policies"
 )
 
@@ -18,7 +18,7 @@ func TestWebsiteValidationPolicy_Apply(t *testing.T) {
 		func(t *testing.T) {
 			website := "some not valid URL"
 
-			organisation := entities.Organisation{
+			organisation := core.Organisation{
 				Website: &website,
 			}
 
@@ -35,7 +35,7 @@ func TestWebsiteValidationPolicy_Apply(t *testing.T) {
 		func(t *testing.T) {
 			website := "https://www.example.com"
 
-			organisation := entities.Organisation{
+			organisation := core.Organisation{
 				Website: &website,
 			}
 
@@ -48,7 +48,7 @@ func TestWebsiteValidationPolicy_Apply(t *testing.T) {
 	)
 
 	t.Run("should not return an error if the organisation website is nil", func(t *testing.T) {
-		organisation := entities.Organisation{
+		organisation := core.Organisation{
 			Website: nil,
 		}
 

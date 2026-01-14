@@ -1,4 +1,4 @@
-package handlers
+package core
 
 import (
 	"context"
@@ -7,27 +7,26 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/commands"
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/repositories"
-
-	organisationEvents "github.com/ekko-earth/organisation/internal/features/onboard/core/events"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
+	"github.com/ekko-earth/shared/observability"
 
 	"github.com/ekko-earth/shared/adapters"
 	"github.com/ekko-earth/shared/messaging"
 	"github.com/ekko-earth/shared/outbox"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type OnboardOrganisationCommandHandler struct {
-	repository       *repositories.OrganisationRepository
+	repository       *OrganisationRepository
 	unitOfWork       adapters.UnitOfWork
 	messagePublisher messagingAdapters.MessagePublisher
 	outboxRepository *outbox.OutboxRepository
 }
 
 func NewOnboardOrganisationCommandHandler(
-	repository *repositories.OrganisationRepository,
+	repository *OrganisationRepository,
 	unitOfWork adapters.UnitOfWork,
 	messagePublisher messagingAdapters.MessagePublisher,
 	outboxRepository *outbox.OutboxRepository,
@@ -41,13 +40,17 @@ func NewOnboardOrganisationCommandHandler(
 }
 
 func (handler *OnboardOrganisationCommandHandler) Handle(
-	command commands.OnboardOrganisationCommand,
+	command OnboardOrganisationCommand,
 	ctx context.Context,
 ) (*uuid.UUID, error) {
+	spanContext, span := observability.Tracer.Start(ctx, "OnboardOrganisationCommandHandler.Handle")
+
+	defer span.End()
+
 	organisationId, err := handler.unitOfWork.Execute(
 		func(transaction adapters.Transaction, ctx context.Context) (any, error) {
 			organisationId, err := handler.repository.OnboardOrganisation(
-				entities.Organisation{
+				Organisation{
 					LegalName:   command.LegalName,
 					TradingName: command.TradingName,
 					Website:     command.Website,
@@ -58,7 +61,7 @@ func (handler *OnboardOrganisationCommandHandler) Handle(
 				return nil, err
 			}
 
-			event := organisationEvents.OrganisationOnboardedEvent{
+			event := &OrganisationOnboardedEvent{
 				Event: messaging.Event{
 					Message: messaging.Message{
 						ConversationId: command.Message.ConversationId,
@@ -72,9 +75,15 @@ func (handler *OnboardOrganisationCommandHandler) Handle(
 				Website:        command.Website,
 			}
 
+			span.AddEvent(
+				"Organisation onboarded",
+				trace.WithAttributes(attribute.String("organisation.id", organisationId.String())),
+			)
+
 			err = handler.outboxRepository.ScheduleMessage(&outbox.OutboxMessage{
 				MessageType: event.GetMessageType(),
-				Message:     event,
+				Message:     *event,
+				Headers:     make(map[string]any),
 			}, transaction, ctx)
 
 			if err != nil {
@@ -84,7 +93,7 @@ func (handler *OnboardOrganisationCommandHandler) Handle(
 
 			return organisationId, nil
 		},
-		ctx,
+		spanContext,
 	)
 
 	return organisationId.(*uuid.UUID), err

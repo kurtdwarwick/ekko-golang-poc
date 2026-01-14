@@ -4,8 +4,11 @@ import (
 	"context"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/gorm/models"
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
 	"github.com/ekko-earth/shared/adapters"
+	"github.com/ekko-earth/shared/observability"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"gorm.io/gorm"
 
@@ -23,17 +26,21 @@ func NewGormOrganizationDAO(database gormAdapters.GormDatabase) *GormOrganisatio
 }
 
 func (dao *GormOrganisationDAO) Create(
-	organisation *entities.Organisation,
+	organisation *core.Organisation,
 	transaction adapters.Transaction,
 	ctx context.Context,
 ) error {
+	spanContext, span := observability.Tracer.Start(ctx, "GormOrganisationDAO.Create")
+
+	defer span.End()
+
 	database := dao.database.Database
 
 	if transaction != nil {
 		database = transaction.(*gormAdapters.GormTransaction).Transaction
 	}
 
-	err := gorm.G[models.GormOrganisationModel](database).Create(ctx, &models.GormOrganisationModel{
+	err := gorm.G[models.GormOrganisationModel](database).Create(spanContext, &models.GormOrganisationModel{
 		GormModel: gormAdapters.GormModel{
 			Id: organisation.Id,
 		},
@@ -42,11 +49,16 @@ func (dao *GormOrganisationDAO) Create(
 		Website:     organisation.Website,
 	})
 
+	span.AddEvent(
+		"Organisation created",
+		trace.WithAttributes(attribute.String("organisation.id", organisation.Id.String())),
+	)
+
 	return err
 }
 
 func (dao *GormOrganisationDAO) Count(
-	organisation *entities.Organisation,
+	organisation *core.Organisation,
 	transaction adapters.Transaction,
 	ctx context.Context,
 ) (int32, error) {

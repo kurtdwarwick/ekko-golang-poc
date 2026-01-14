@@ -1,4 +1,4 @@
-package commands
+package core
 
 import "github.com/ekko-earth/shared/messaging"
 

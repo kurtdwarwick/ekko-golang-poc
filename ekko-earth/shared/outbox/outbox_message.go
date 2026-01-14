@@ -10,6 +10,7 @@ type OutboxMessage struct {
 	Id            uuid.UUID
 	MessageType   string
 	Message       any
+	Headers       map[string]any
 	CreatedAt     time.Time
 	LockedAt      *time.Time
 	LockReference *string

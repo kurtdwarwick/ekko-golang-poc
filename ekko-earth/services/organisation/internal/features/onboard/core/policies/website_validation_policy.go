@@ -5,13 +5,13 @@ import (
 
 	"regexp"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/data/entities"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
 )
 
 type WebsiteValidationPolicy struct{}
 
 func (policy WebsiteValidationPolicy) Apply(value any) error {
-	organisation, ok := value.(entities.Organisation)
+	organisation, ok := value.(core.Organisation)
 
 	if !ok {
 		return errors.New("value is not an organisation")

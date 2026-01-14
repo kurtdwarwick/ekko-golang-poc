@@ -21,6 +21,8 @@ func main() {
 		Database: "ekko_earth",
 	})
 
+	// Simply use this to swap out the MongoDB database for a PostgreSQL database
+
 	// database := gormAdapters.NewGormDatabase(adapters.DatabaseConfiguration{
 	// 	Host:     "localhost",
 	// 	Port:     5432,

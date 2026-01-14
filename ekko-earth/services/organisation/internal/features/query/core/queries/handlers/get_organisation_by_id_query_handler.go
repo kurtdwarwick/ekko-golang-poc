@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"context"
-	"log/slog"
 
 	"github.com/ekko-earth/organisation/internal/features/query/core/data/entities"
 	"github.com/ekko-earth/organisation/internal/features/query/core/queries"
 	"github.com/ekko-earth/organisation/internal/features/query/core/repositories"
+	"github.com/ekko-earth/shared/observability"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type GetOrganisationByIdQueryHandler struct {
@@ -25,6 +28,23 @@ func (handler *GetOrganisationByIdQueryHandler) Handle(
 	query queries.GetOrganisationByIdQuery,
 	ctx context.Context,
 ) (*entities.Organisation, error) {
-	slog.Info("Getting organisation by ID", "ID", query.Id)
-	return handler.repository.GetOrganisationById(query.Id, nil, ctx)
+	spanContext, span := observability.Tracer.Start(ctx, "GetOrganisationByIdQueryHandler.Handle")
+
+	defer span.End()
+
+	span.SetAttributes(attribute.String("query.id", query.Id))
+
+	organisation, err := handler.repository.GetOrganisationById(query.Id, nil, spanContext)
+
+	if err != nil {
+		span.RecordError(err)
+		return nil, err
+	}
+
+	span.AddEvent(
+		"Organisation retrieved",
+		trace.WithAttributes(attribute.String("organisation.id", organisation.Id.String())),
+	)
+
+	return organisation, nil
 }

@@ -10,7 +10,7 @@ type Message struct {
 	ConversationId uuid.UUID
 }
 
-type HasMessageType interface {
+type WithMessageType interface {
 	GetMessageType() string
 }
 

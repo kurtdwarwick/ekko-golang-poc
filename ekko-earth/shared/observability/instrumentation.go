@@ -5,10 +5,15 @@ import (
 	"errors"
 
 	"github.com/ekko-earth/shared/observability/adapters"
+
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 )
 
-func NewInstrumentation(ctx context.Context) (func(context.Context) error, error) {
+var Tracer trace.Tracer
+var Instrument bool = false
+
+func NewInstrumentation(ctx context.Context, serviceName string) (func(context.Context) error, error) {
 	var shutdowns []func(context.Context) error
 	var err error
 
@@ -32,7 +37,7 @@ func NewInstrumentation(ctx context.Context) (func(context.Context) error, error
 
 	otel.SetTextMapPropagator(prop)
 
-	traceProvider, err := adapters.NewTraceProvider()
+	traceProvider, err := adapters.NewTraceProvider(ctx, serviceName)
 
 	if err != nil {
 		handleErr(err)
@@ -42,6 +47,9 @@ func NewInstrumentation(ctx context.Context) (func(context.Context) error, error
 	shutdowns = append(shutdowns, traceProvider.Shutdown)
 
 	otel.SetTracerProvider(traceProvider)
+
+	Tracer = traceProvider.Tracer(serviceName)
+	Instrument = true
 
 	return shutdown, err
 }

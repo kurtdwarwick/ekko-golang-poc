@@ -3,18 +3,17 @@ package http
 import (
 	"context"
 
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/commands"
-	"github.com/ekko-earth/organisation/internal/features/onboard/core/commands/handlers"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
 	"github.com/ekko-earth/shared/http/adapters"
 )
 
 type OnboardOrganisationHttpConsumer struct {
-	onboardOrganisationCommandHandler *handlers.OnboardOrganisationCommandHandler
+	onboardOrganisationCommandHandler *core.OnboardOrganisationCommandHandler
 }
 
 func NewOnboardOrganisationHttpConsumer(
 	server *adapters.HttpServer,
-	onboardOrganisationCommandHandler *handlers.OnboardOrganisationCommandHandler,
+	onboardOrganisationCommandHandler *core.OnboardOrganisationCommandHandler,
 ) *OnboardOrganisationHttpConsumer {
 	consumer := &OnboardOrganisationHttpConsumer{
 		onboardOrganisationCommandHandler: onboardOrganisationCommandHandler,
@@ -34,7 +33,7 @@ func (consumer *OnboardOrganisationHttpConsumer) Consume(
 	body OnboardOrganisationHttpIncomingDto,
 	ctx context.Context,
 ) (*OnboardOrganisationHttpOutgoingDto, error) {
-	command := commands.OnboardOrganisationCommand{
+	command := core.OnboardOrganisationCommand{
 		LegalName:   body.LegalName,
 		TradingName: body.TradingName,
 		Website:     &body.Website,

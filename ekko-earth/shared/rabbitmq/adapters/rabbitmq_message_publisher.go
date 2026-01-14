@@ -4,10 +4,11 @@ import (
 	"context"
 	"encoding/json"
 
-	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 	"github.com/google/uuid"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+
+	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 )
 
 type RabbitMQMessagePublisher struct {
@@ -36,7 +37,12 @@ func NewRabbitMQMessagePublisher(
 	}
 }
 
-func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ctx context.Context) error {
+func (publisher *RabbitMQMessagePublisher) Publish(
+	message any,
+	topic string,
+	headers map[string]any,
+	ctx context.Context,
+) error {
 	body, err := json.Marshal(message)
 
 	if err != nil {
@@ -75,6 +81,7 @@ func (publisher *RabbitMQMessagePublisher) Publish(message any, topic string, ct
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
+			Headers:     amqp.Table(headers),
 		},
 	)
 

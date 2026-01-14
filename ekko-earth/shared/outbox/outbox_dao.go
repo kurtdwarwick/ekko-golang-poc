@@ -22,5 +22,5 @@ type OutboxDAO interface {
 		limit int,
 		transaction adapters.Transaction,
 		ctx context.Context,
-	) ([]OutboxMessage, error)
+	) ([]*OutboxMessage, error)
 }

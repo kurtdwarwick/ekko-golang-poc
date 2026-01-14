@@ -63,7 +63,22 @@ services:
     depends_on:
       - poc-mongodb
 
+  poc-jaeger:
+  
+    container_name: poc-jaeger
+    image: cr.jaegertracing.io/jaegertracing/jaeger:latest
+    ports:
+      - "6006:6006"
+      - "16686:16686"
+      - "4317:4317" 
+      - "4318:4318"
+      - "5778:5778"
+      - "9411:9411"
+    volumes:
+      - poc-jaeger-data:/jaeger
+
 volumes:
   poc-postgres-data:
   poc-rabbitmq-data:
   poc-mongodb-data:
+  poc-jaeger-data:

@@ -3,20 +3,19 @@ package grpc
 import (
 	"net"
 
-	organisationCommands "github.com/ekko-earth/organisation/internal/features/onboard/core/commands"
-	organisationCommandHandlers "github.com/ekko-earth/organisation/internal/features/onboard/core/commands/handlers"
-	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
-
 	"context"
 
 	"github.com/ekko-earth/organisation/internal/features/onboard/adapters/grpc/proto"
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
+
+	grpcAdapters "github.com/ekko-earth/shared/grpc/adapters"
 )
 
 type OnboardOrganisationGrpcConsumer struct {
 	proto.UnimplementedOnboardOrganisationServiceServer
 
 	listener                          net.Listener
-	onboardOrganisationCommandHandler *organisationCommandHandlers.OnboardOrganisationCommandHandler
+	onboardOrganisationCommandHandler *core.OnboardOrganisationCommandHandler
 }
 
 type OnboardOrganisationGrpcServerConfiguration struct {
@@ -27,7 +26,7 @@ type OnboardOrganisationGrpcServerConfiguration struct {
 
 func NewOnboardOrganisationGrpcConsumer(
 	server grpcAdapters.GrpcServer,
-	onboardOrganisationCommandHandler *organisationCommandHandlers.OnboardOrganisationCommandHandler,
+	onboardOrganisationCommandHandler *core.OnboardOrganisationCommandHandler,
 ) *OnboardOrganisationGrpcConsumer {
 	consumer := &OnboardOrganisationGrpcConsumer{
 		listener:                          server.Listener,
@@ -43,7 +42,7 @@ func (consumer *OnboardOrganisationGrpcConsumer) OnboardOrganisation(
 	ctx context.Context,
 	request *proto.OnboardOrganisationRequest,
 ) (*proto.OnboardOrganisationResponse, error) {
-	command := organisationCommands.OnboardOrganisationCommand{
+	command := core.OnboardOrganisationCommand{
 		LegalName:   *request.LegalName,
 		TradingName: *request.TradingName,
 		Website:     request.Website,

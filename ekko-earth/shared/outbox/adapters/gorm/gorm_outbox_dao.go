@@ -41,9 +41,16 @@ func (dao *GormOutboxDAO) Create(
 		return err
 	}
 
+	headers, err := json.Marshal(outboxMessage.Headers)
+
+	if err != nil {
+		return err
+	}
+
 	return gorm.G[GormOutboxMessageModel](database).Create(ctx, &GormOutboxMessageModel{
 		MessageType: outboxMessage.GetMessageType(),
 		Message:     datatypes.JSON(message),
+		Headers:     datatypes.JSON(headers),
 	})
 }
 
@@ -73,7 +80,7 @@ func (dao *GormOutboxDAO) Find(
 	limit int,
 	transaction adapters.Transaction,
 	ctx context.Context,
-) ([]outbox.OutboxMessage, error) {
+) ([]*outbox.OutboxMessage, error) {
 	database := dao.database.Database
 
 	if transaction != nil {
@@ -86,13 +93,20 @@ func (dao *GormOutboxDAO) Find(
 		return nil, err
 	}
 
-	outboxMessages := make([]outbox.OutboxMessage, len(outboxMessagesModels))
+	outboxMessages := make([]*outbox.OutboxMessage, len(outboxMessagesModels))
 
 	for i, outboxMessageModel := range outboxMessagesModels {
-		outboxMessages[i] = outbox.OutboxMessage{
+		var message any
+		var headers map[string]any
+
+		json.Unmarshal(outboxMessageModel.Message, &message)
+		json.Unmarshal(outboxMessageModel.Headers, &headers)
+
+		outboxMessages[i] = &outbox.OutboxMessage{
 			Id:            outboxMessageModel.Id,
 			MessageType:   outboxMessageModel.MessageType,
-			Message:       outboxMessageModel.Message,
+			Message:       message,
+			Headers:       headers,
 			CreatedAt:     outboxMessageModel.CreatedAt,
 			LockedAt:      outboxMessageModel.LockedAt,
 			LockReference: outboxMessageModel.LockReference,

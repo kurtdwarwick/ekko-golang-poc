@@ -2,9 +2,11 @@ package outbox
 
 import (
 	"context"
+	"maps"
 	"time"
 
 	"github.com/ekko-earth/shared/adapters"
+	"github.com/ekko-earth/shared/observability"
 	"github.com/google/uuid"
 )
 
@@ -12,7 +14,9 @@ type OutboxRepository struct {
 	outboxDao OutboxDAO
 }
 
-func NewOutboxRepository(outboxDao OutboxDAO) *OutboxRepository {
+func NewOutboxRepository(
+	outboxDao OutboxDAO,
+) *OutboxRepository {
 	return &OutboxRepository{outboxDao: outboxDao}
 }
 
@@ -21,6 +25,11 @@ func (repository *OutboxRepository) ScheduleMessage(
 	transaction adapters.Transaction,
 	ctx context.Context,
 ) error {
+	if observability.Instrument {
+		headers := observability.ExtractFromContext(ctx)
+		maps.Copy(outboxMessage.Headers, headers)
+	}
+
 	return repository.outboxDao.Create(outboxMessage, transaction, ctx)
 }
 
@@ -46,7 +55,7 @@ func (repository *OutboxRepository) GetUnsentMessages(
 	batchSize int,
 	transaction adapters.Transaction,
 	ctx context.Context,
-) ([]OutboxMessage, error) {
+) ([]*OutboxMessage, error) {
 	return repository.outboxDao.Find(map[string]any{"lock_reference": reference}, batchSize, transaction, ctx)
 }
 

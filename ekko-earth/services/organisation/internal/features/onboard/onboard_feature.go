@@ -8,6 +8,8 @@ import (
 	"github.com/ekko-earth/shared/outbox"
 	"github.com/ekko-earth/shared/policies"
 
+	"github.com/ekko-earth/organisation/internal/features/onboard/core"
+
 	adapters "github.com/ekko-earth/shared/adapters"
 	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 
@@ -15,9 +17,7 @@ import (
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
 
 	organisationGormAccess "github.com/ekko-earth/organisation/internal/features/onboard/adapters/gorm"
-	organisationCommandHandlers "github.com/ekko-earth/organisation/internal/features/onboard/core/commands/handlers"
 	organisationPolicies "github.com/ekko-earth/organisation/internal/features/onboard/core/policies"
-	organisationRepositories "github.com/ekko-earth/organisation/internal/features/onboard/core/repositories"
 )
 
 type OnboardFeature struct {
@@ -46,14 +46,14 @@ func NewOnboardFeature(
 
 	slog.Info("Creating repository")
 
-	repository := organisationRepositories.NewOrganisationRepository(
+	repository := core.NewOrganisationRepository(
 		organisationDao,
 		*policyHandler,
 	)
 
 	slog.Info("Creating command handler")
 
-	onboardOrganisationCommandHandler := organisationCommandHandlers.NewOnboardOrganisationCommandHandler(
+	onboardOrganisationCommandHandler := core.NewOnboardOrganisationCommandHandler(
 		repository,
 		unitOfWork,
 		outboundMessagePublisher,

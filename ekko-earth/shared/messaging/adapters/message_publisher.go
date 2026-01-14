@@ -7,5 +7,5 @@ import (
 type MessagePublisherConfiguration struct{}
 
 type MessagePublisher interface {
-	Publish(message any, topic string, ctx context.Context) error
+	Publish(message any, topic string, headers map[string]any, ctx context.Context) error
 }

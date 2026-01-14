@@ -11,10 +11,9 @@ import (
 
 	adapters "github.com/ekko-earth/shared/adapters"
 	gormAdapters "github.com/ekko-earth/shared/gorm/adapters"
+	http "github.com/ekko-earth/shared/http"
 	httpAdapters "github.com/ekko-earth/shared/http/adapters"
-	messagingAdapters "github.com/ekko-earth/shared/messaging/adapters"
 	observability "github.com/ekko-earth/shared/observability"
-	observabilityAdapters "github.com/ekko-earth/shared/observability/adapters"
 	outbox "github.com/ekko-earth/shared/outbox"
 	outboxAdapters "github.com/ekko-earth/shared/outbox/adapters/gorm"
 	rabbitmqAdapters "github.com/ekko-earth/shared/rabbitmq/adapters"
@@ -22,7 +21,7 @@ import (
 
 func main() {
 	context, cancel := context.WithCancel(context.Background())
-	shutdown, err := observability.NewInstrumentation(context)
+	shutdown, err := observability.NewInstrumentation(context, "github.com/ekko-earth/organisation")
 
 	var server adapters.Server
 
@@ -39,8 +38,16 @@ func main() {
 		Address: ":8080",
 	})
 
-	instrumenter := observabilityAdapters.HttpInstrumenter{}
-	instrumenter.Instrument(*server.(*httpAdapters.HttpServer))
+	// Simply use this to swap out the HTTP server for a GRPC server
+
+	// slog.Info("Creating GRPC server")
+
+	// server = grpcAdapters.NewGrpcServer(grpcAdapters.GrpcServerConfiguration{
+	// 	Network: "tcp",
+	// 	Port:    50051,
+	// })
+
+	http.Instrument(*server.(*httpAdapters.HttpServer))
 
 	database := gormAdapters.NewGormDatabase(adapters.DatabaseConfiguration{
 		Host:     "localhost",
@@ -61,11 +68,10 @@ func main() {
 	outboundMessagePublisher := rabbitmqAdapters.NewRabbitMQMessagePublisher(
 		*outboundMessageBus,
 		rabbitmqAdapters.RabbitMQMessagePublisherConfiguration{
-			MessagePublisherConfiguration: messagingAdapters.MessagePublisherConfiguration{},
-			Durable:                       true,
-			Exclusive:                     false,
-			AutoDelete:                    false,
-			NoWait:                        false,
+			Durable:    true,
+			Exclusive:  false,
+			AutoDelete: false,
+			NoWait:     false,
 		},
 	)
 
@@ -73,6 +79,7 @@ func main() {
 
 	outboxDao := outboxAdapters.NewGormOutboxDAO(*database)
 	outboxRepository := outbox.NewOutboxRepository(outboxDao)
+
 	outboxWorker := outbox.NewOutboxWorker(
 		outboxRepository,
 		unitOfWork,
